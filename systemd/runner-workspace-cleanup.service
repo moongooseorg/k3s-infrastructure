@@ -1,7 +1,0 @@
-[Unit]
-Description=Clean up stale GitHub Actions workspaces
-
-[Service]
-Type=oneshot
-User=github-runner
-ExecStart=find /opt/github-runner/actions-runner/_work -mindepth 2 -maxdepth 2 -type d -mtime +1 -exec rm -rf {} +
