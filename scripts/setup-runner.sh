@@ -58,8 +58,6 @@ cd /opt/github-runner/actions-runner
 sudo ./svc.sh install github-runner
 sudo ./svc.sh start
 
-echo "    Service status:"
-./svc.sh status
 
 # ---------------------------------------------------------------------------
 # Step 4 — Give the runner kubeconfig access
