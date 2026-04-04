@@ -55,8 +55,16 @@ read -r < /dev/tty
 echo ""
 echo "==> Step 3: Installing and starting the runner service..."
 cd /opt/github-runner/actions-runner
-sudo ./svc.sh install github-runner
-sudo ./svc.sh start
+if systemctl list-unit-files 'actions.runner.moongooseorg.*' --no-legend | grep -q .; then
+    echo "    Runner service already installed, skipping install."
+else
+    sudo ./svc.sh install github-runner
+fi
+if systemctl is-active --quiet 'actions.runner.moongooseorg.*'; then
+    echo "    Runner service already running, skipping start."
+else
+    sudo ./svc.sh start
+fi
 
 
 # ---------------------------------------------------------------------------
