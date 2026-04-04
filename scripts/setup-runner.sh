@@ -70,7 +70,10 @@ sudo chown -R github-runner:github-runner /home/github-runner/.kube
 sudo chmod 600 /home/github-runner/.kube/config
 
 echo "    Writing systemd service override for KUBECONFIG..."
-sudo systemctl edit actions.runner.moongooseorg.* --force <<'EOF'
+RUNNER_SVC=$(systemctl list-units --type=service --no-legend 'actions.runner.moongooseorg.*' | awk '{print $1}' | head -1)
+OVERRIDE_DIR="/etc/systemd/system/${RUNNER_SVC}.d"
+sudo mkdir -p "$OVERRIDE_DIR"
+sudo tee "$OVERRIDE_DIR/kubeconfig.conf" > /dev/null <<'EOF'
 [Service]
 Environment="KUBECONFIG=/home/github-runner/.kube/config"
 EOF
