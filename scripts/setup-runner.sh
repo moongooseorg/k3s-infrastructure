@@ -80,15 +80,17 @@ sudo chmod 600 /home/github-runner/.kube/config
 echo "    Writing systemd service override for KUBECONFIG..."
 RUNNER_SVC=$(systemctl list-units --type=service --no-legend 'actions.runner.moongooseorg.*' | awk '{print $1}' | head -1)
 OVERRIDE_DIR="/etc/systemd/system/${RUNNER_SVC}.d"
+OVERRIDE_FILE="$OVERRIDE_DIR/kubeconfig.conf"
+OVERRIDE_CONTENT=$'[Service]\nEnvironment="KUBECONFIG=/home/github-runner/.kube/config"'
 sudo mkdir -p "$OVERRIDE_DIR"
-sudo tee "$OVERRIDE_DIR/kubeconfig.conf" > /dev/null <<'EOF'
-[Service]
-Environment="KUBECONFIG=/home/github-runner/.kube/config"
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl restart actions.runner.moongooseorg.*
-echo "    Service restarted with KUBECONFIG set."
+if [ ! -f "$OVERRIDE_FILE" ] || [ "$(sudo cat "$OVERRIDE_FILE")" != "$OVERRIDE_CONTENT" ]; then
+    echo "$OVERRIDE_CONTENT" | sudo tee "$OVERRIDE_FILE" > /dev/null
+    sudo systemctl daemon-reload
+    sudo systemctl restart actions.runner.moongooseorg.*
+    echo "    Service restarted with KUBECONFIG set."
+else
+    echo "    Override already up to date, skipping restart."
+fi
 
 # ---------------------------------------------------------------------------
 # Step 5 — Install nightly workspace cleanup timer
@@ -122,7 +124,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now runner-workspace-cleanup.timer
 
 echo "    Timer status:"
-systemctl list-timers runner-workspace-cleanup.timer
+systemctl list-timers --no-pager runner-workspace-cleanup.timer
 
 # ---------------------------------------------------------------------------
 echo ""
