@@ -24,6 +24,9 @@ SSH in and run:
 ```bash
 sudo apt update -y
 sudo apt upgrade -y
+sudo mkdir -p /var/log/journal                                                                          
+sudo systemctl restart systemd-journald                                                                 
+
 sudo curl -sfL https://get.k3s.io | sh -
 ```
 
@@ -40,5 +43,7 @@ Run on each worker node:
 ```bash
 sudo apt update -y
 sudo apt upgrade -y
+sudo mkdir -p /var/log/journal                                                                          
+sudo systemctl restart systemd-journald   
 curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=<token> K3S_NODE_NAME="node-1" sh -
 ```
