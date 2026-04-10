@@ -17,16 +17,29 @@ Plug into PC and edit `cmdline.txt` — append to the end of the existing line:
 cgroup_memory=1 cgroup_enable=memory
 ```
 
-## 3. Set Up Master Node
+## 3. Basic Pi Setup
 
 SSH in and run:
 
 ```bash
 sudo apt update -y
 sudo apt upgrade -y
-sudo mkdir -p /var/log/journal                                                                          
-sudo systemctl restart systemd-journald                                                                 
+sudo mkdir -p /var/log/journal
+sudo systemctl restart systemd-journald
+```
+```bash
+sudo nano /etc/systemd/journald.conf
+```
+Set or uncomment:
+```
+[Journal]
+Storage=persistent
+SystemMaxUse=100M
+```
 
+## 4. If a Master node
+
+```bash
 sudo curl -sfL https://get.k3s.io | sh -
 ```
 
@@ -36,14 +49,10 @@ Grab the k3s token for worker nodes:
 sudo cat /var/lib/rancher/k3s/server/node-token
 ```
 
-## 4. Set Up Worker Nodes
+## 5. If a Worker Node
 
 Run on each worker node:
 
-```bash
-sudo apt update -y
-sudo apt upgrade -y
-sudo mkdir -p /var/log/journal                                                                          
-sudo systemctl restart systemd-journald   
+```bash 
 curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=<token> K3S_NODE_NAME="node-1" sh -
 ```
