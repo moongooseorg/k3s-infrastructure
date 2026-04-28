@@ -36,6 +36,14 @@ Set or uncomment:
 Storage=persistent
 SystemMaxUse=100M
 ```
+```bash
+sudo nano /usr/lib/systemd/journal.conf.d/40-rpi-volatile-storage.conf
+```
+And update Storage to
+```
+Storage=persistent
+```
+
 
 ## 4. If a Master node
 
@@ -43,10 +51,21 @@ SystemMaxUse=100M
 sudo curl -sfL https://get.k3s.io | sh -
 ```
 
-Grab the k3s token for worker nodes:
+Grab the k3s token for worker nodes: (you'll need this later)
 
 ```bash
 sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+### disable metrics server
+```bash
+nano /etc/rancher/k3s/config.yaml
+```
+
+add:
+```
+disable:
+  - metrics-server
 ```
 
 ## 5. If a Worker Node
